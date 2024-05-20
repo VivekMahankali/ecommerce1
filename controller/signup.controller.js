@@ -16,6 +16,7 @@ async function saveUser(req,res){
         
         catch(error){
             res.status(400).json({"message":"invalid details"});
+            res.json("mes");
         }
         
 }
