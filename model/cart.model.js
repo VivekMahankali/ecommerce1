@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-const userModel = require('./users.model');
+const userModel = require('./signup.model');
 const cartSchema=mongoose.Schema({
     cartItemId:{
         type:String,

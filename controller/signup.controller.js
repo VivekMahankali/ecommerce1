@@ -1,4 +1,5 @@
-const signModel=require('../model/users.model')
+const signModel=require('../model/signup.model')
+const jwt=require('jsonwebtoken');
 async function saveUser(req,res){
         try{
             
@@ -10,9 +11,10 @@ async function saveUser(req,res){
                 mobileNumber:mobileNumber1
             });
             res.status(200).json(user1);
-            // jwt.sign({email,password},"private key",(err,token)=>{
-            //     res.status(200).json({token});
-        }
+            jwt.sign({email,password},"private key",(err,token)=>{
+                 res.status(200).json({token});
+        });
+    }
         
         catch(error){
             res.status(400).json({"message":"invalid details"});
