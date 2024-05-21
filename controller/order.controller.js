@@ -1,44 +1,57 @@
-const orderModel=require('../model/order.model')
-async function enter(req,res){
-    try{
-    const {userId,orderId,productName,quantity,totalPrice,status,price}=req.body
-    const order=orderModel.create({
-        userId,orderId,productName,quantity,totalPrice,status,price
-    })
-    res.status(200).json(order)
-    }
-    catch(err){
-        res.status(404).json({"message":"Invalid Order"})
+const orderModel = require('../model/order.model');
+const productModel = require('../models/product.model');
+const cartModel = require('../models/cart.model');
+async function enter(req, res) {
+    try {
+        const { userId, orderId, productName, quantity, totalPrice, status, price } = req.body;
+        const order = await orderModel.create({
+            userId, orderId, productName, quantity, totalPrice, status, price
+        });
+        res.status(200).json(order);
+    } catch (err) {
+        res.status(404).json({ "message": "Invalid Order" });
     }
 }
-async function getUserProducts(req,res){
+async function getUserProducts(req, res) {
     try {
         const userId = req.params.userId;
-        const orders = await Order.find({ userId }).exec();
+        const orders = await orderModel.find({ userId }).exec();
         res.json(orders);
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ message: error.message });
-      }
+    }
 }
-async function saveProducts(req,res){
-    try{
-        const { userId, ...rem }=req.body;
-        const user=await User.findById(userId);
-        if(!user)
-          return res.status(404).json({ message:'User not found'});
-        for (let item of products) {
-          const product=await Product.findById(item.productId);
-          if (!product)
-            return res.status(404).json({ message:`Product with ID ${item.productId} not found`});
+async function placeOrder(req, res) {
+    try {
+        const { userId, cartItems } = req.body;
+        let totalPrice = 0;
+        for (const item of cartItems) {
+            const product = await productModel.findOne({ productName: item.productName });
+            if (!product || item.quantity > product.quantity) {
+                return res.status(404).json({ message: `Out of Stock: ${item.productName}` });
+            }
+            totalPrice += item.price * item.quantity;
         }
-        const order=new Order({
-          userId,
-          //products
+
+        for (const item of cartItems) {
+            await productModel.updateOne(
+                { productName: item.productName },
+                { $inc: { quantity: -item.quantity } }
+            );
+        }
+        const order = new orderModel({
+            userId,
+            items: cartItems,
+            totalPrice,
+            status: 'Processing'
         });
         await order.save();
-        res.status(201).json(order);
-      }catch(error) {
+        
+        res.status(200).json(order);
+    } catch (error) {
         console.error(error);
-        res.status(500).json({message:'Internal server error'});
-      }
+        res.status(500).json({ message: 'Internal server error' });
+    }
 }
+
+module.exports = { enter, getUserProducts, placeOrder };

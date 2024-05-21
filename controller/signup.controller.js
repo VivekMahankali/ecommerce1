@@ -1,27 +1,46 @@
-const signModel=require('../model/users.model')
+const RegisterModel=require("../models/models.UserModel")
+
 async function saveUser(req,res){
-        try{
-            
-            const {email1,password1,username1,mobileNumber1}=req.body;
-            const user1=await signModel.create({
-                email:email1,
-                password:password1,
-                username:username1,
-                mobileNumber:mobileNumber1
-            });
-            res.status(200).json(user1);
-            // jwt.sign({email,password},"private key",(err,token)=>{
-            //     res.status(200).json({token});
+    try{
+        console.log(req.body)
+        const {id,username,password,name,email,phone}=req.body
+        const register =await RegisterModel.create({
+            _id:id,
+            username:username,
+            password:password,
+            name:name,
+            email:email,
+            phone:phone
+        })
+        res.status(200).json(register)
+
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json({message:"Could not Register"})
+    }
+}
+
+async function checkUser(req,res){
+    try{
+        const user=await RegisterModel.findOne({email:req.body.email})
+        if(user){
+            const result=req.body.password==user.password;
+            if(result){
+                res.status(200).json({message:"Login successful"})
+            }
+            else{
+                res.status(500).json({message:"Password DOES NOT match"})
+            }
+        }
+        else{
+            res.status(500).json({message:"User DOES NOT exist"})
         }
         
-        catch(error){
-            res.status(400).json({"message":"invalid details"});
-            res.json("mes");
-        }
-        
+    }
+    catch(err){
+        res.status(500).json({message:"Error while logging in"})
+    }
+    return user.id
 }
-async function getUser(req,res){
-       const users=await signModel.find({})
-       res.status(200).json(users);
-}
-module.exports={saveUser,getUser};
+module.exports={saveUser,checkUser}

@@ -10,12 +10,15 @@ const cartSchema=mongoose.Schema({
         ref: 'User',
         required:true,
     },
-    productName:String,
-    quantity:{
-        type:Number,
-        default:1,
-    },
-    price:String
+    items:[{
+        productId:Number,
+        productName:String,
+        quantity:{
+            type:Number,
+            default:1,
+        },
+        price:String
+    }]
 });
 const cartModel=mongoose.model("Cart",cartSchema);
 module.exports=cartModel;
