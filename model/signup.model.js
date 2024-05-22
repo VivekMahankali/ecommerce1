@@ -18,7 +18,7 @@ const user_schema=mongoose.Schema({
     mobileNumber:{
         type:Number,
         required:true,
-    }/*,
+    },
     active:{
         type:Boolean,
         required:true,
@@ -33,7 +33,8 @@ const user_schema=mongoose.Schema({
     ordersList:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order',
-    }*/
+    }
+    
 });
 
 const userModel=mongoose.model("User",user_schema);
