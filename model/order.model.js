@@ -4,7 +4,7 @@ const orderSchema=mongoose.Schema({
         type:String,
         required:true,
     },
-    userId: { type: String, required: true },
+  userId: { type: String, required: true },
     items: [{
         productId: String,
         productName: String,
@@ -15,7 +15,7 @@ const orderSchema=mongoose.Schema({
         price: Number
     }],
     total: { type: Number, required: true },
-    status: { type: String, default: 'Processing' }
+    status: { type: String, default: 'Processing' },
     // userId:{
     //     type:String,
     //     required:true,
